@@ -1,0 +1,35 @@
+{
+    "tag": "voc-50a5-01",
+    "comment": "voc res50 anchor B=5",
+    "base":{
+        "batch_size": 9,
+        "dataset": "voc"
+    },
+    "net": {
+        "backbone": "resnet50",
+        
+        "B": 5,
+        "C": 20,
+        "anchor": true
+    },
+    "loss":{
+        "init_iter_num": 12800
+    },
+    "train": {
+        "train": true,
+        "optimizer": {
+            "warm_up": {
+                "warm_up": true,
+                "init_lr": 0.00005,
+                "end_lr": 0.001,
+                "step_num": 4800
+            }
+        }
+    },
+    "valid":{
+        "valid": true
+    },
+    "mAP":{
+        "mAP": true
+    }
+}

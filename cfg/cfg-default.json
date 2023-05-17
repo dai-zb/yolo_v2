@@ -1,0 +1,153 @@
+{
+    "tag": "cfg-default",
+    "comment": "cfg-default.json",
+    "base":{
+        "batch_size": null,
+        "device": "cuda",
+        "dataset": null,
+        "dataset(comment)": "voc:使用VOC2012+2007,coco:使用coco2017",
+        "dataset_uri": {
+            "voc": null,
+            "coco": {
+                "train": {
+                    "an_paths":[
+                        "/root/jupyter_workhome/dataset/coco/coco2017/annotations/instances_train2017.json"
+                    ],
+                    "img_paths":[
+                        "/root/jupyter_workhome/dataset/coco/coco2017/train2017/"
+                    ]
+                },
+                "val": {
+                    "an_paths":[
+                        "/root/jupyter_workhome/dataset/coco/coco2017/annotations/instances_val2017.json"
+                    ],
+                    "img_paths":[
+                        "/root/jupyter_workhome/dataset/coco/coco2017/val2017/"
+                    ]
+                }
+            },
+            "coco(comment)":"目前使用的代码，label必须是coco80"
+        },
+        "dataset_uri(comment)": "数据集对应的标注文件&图片的目录",
+        "batch_n_print": 100,
+        "csv_decimal": 4,
+        "rename_dir": true
+    },
+    "net": {
+        "backbone": null,
+        "backbone(comment)": ["resnet101", "resnet50", "resnet34", "resne18"],
+        "model_path": null,
+        "model_path(comment)": [null,
+                       "./coco-18a5-02-20211025_2316/model-best.pth",
+                       "加载的模型会根据各个参数的名称和shape进行加载",
+                       "如果为null，则使用resnet的预训练模型"
+        ],
+        
+        "model_lock": false,
+        "model_lock_epoch": [0, 1, 3, 5, 8],
+        "model_lock_names": [
+            ["conv_end", "bn_end"],
+            ["conv_end", "bn_end", "layer5"],
+            ["conv_end", "bn_end", "layer5", "layer4"],
+            ["conv_end", "bn_end", "layer5", "layer4", "layer3"],
+            ["conv_end", "bn_end", "layer5", "layer4", "layer3", "layer2"]
+        ],
+        "model_lock_names(comment)": [
+            ["conv_end", "bn_end"],
+            ["conv_end", "bn_end", "layer5"],
+            ["conv_end", "bn_end", "layer5", "layer4"],
+            ["conv_end", "bn_end", "layer5", "layer4", "layer3"],
+            ["conv_end", "bn_end", "layer5", "layer4", "layer3", "layer2"],
+            ["conv_end", "bn_end", "layer"],
+            [""],
+            "model_lock_epoch和model_lock_names进行zip，根据epoch num切换锁住的层"
+        ],
+
+        "model(comment)": [null,
+                           "../YOLO-v1-resnet50-参考/best-48-2.905.pth"],
+        
+        "B": null,
+        "C": null,
+        "image_size": 416,
+        "anchor": null
+    },
+    "anchor":{
+        "voc": [[0.1017, 0.13319],
+                [0.2456, 0.30842],
+                [0.38891, 0.62299],
+                [0.72855, 0.37235],
+                [0.86434, 0.76978]],
+         "coco": [[0.04406, 0.05211],
+                  [0.14419, 0.15866],
+                  [0.2568, 0.4211],
+                  [0.60637, 0.27137],
+                  [0.75158, 0.70525]],
+        "wh": null
+    },
+    "loss":{
+        "coefficients": [5, 5, 1, 0.5, 1, 0.05],
+        "wh_sqrt": false,
+        
+        "anchors_calc_iou": true,
+        "anchors_calc_iou(comment)": "使用anchors计算iou, 为false则使用pred计算iou",
+        
+        "init_iter_num": -1,
+        "init_iter_num(comment)": "12800，如果是-1，则表示不使用(不使用锚框时，设为-1)",
+        
+        "conf_target_iou": false,
+        "conf_bce": true,
+        "conf(comment)": "conf_target_iou=true,使用iou为target;conf_bce=true,使用bce计算conf的loss",
+        "cls_ce": true,
+        "cls_ce(comment)": "使用交叉熵计算cls的loss",
+        "focus_on_small": false,
+        "focus_on_small(comment)": "v3引入的，专门用于coco，对于小物体的框使用更高的权重"
+    },
+    "train": {
+        "train": false,
+        
+        "aug_funcs": ["random_flip", "random_blur",
+            "random_brightness", "random_hue", "random_saturation",
+            "random_shift", "random_crop"],
+        "aug_funcs_all(comment)":[
+            "random_flip", "random_scale", "random_blur",
+            "random_brightness", "random_hue", "random_saturation",
+            "random_shift", "random_crop"],
+
+        "multi_scale": true,
+        "image_size_change_num": 10,
+        "multi_scale(comment)": "每间隔image_size_change_num个batch，就改变一下输入的尺寸",
+        
+        "epoches_num": 40,
+        "optimizer": {
+            "use_adam": false,
+            "use_adam(comment)": "adam优化器的效果不太好",
+            "epoch_lr": [[22, 33], [0.001, 0.0001, 0.00001]],
+            "warm_up": {
+                "warm_up": false,
+                "init_lr": null,
+                "end_lr": null,
+                "step_num": null
+            },
+            "momentum": 0.9,
+            "weight_decay": 5e-4
+        }
+    },
+    "valid":{
+        "valid": false,
+        "save_best_loss_model": true
+    },
+    "mAP":{
+        "mAP": false,
+        
+        "save_voc_to_coco": false,
+        "save_voc_to_coco(comment)": "在coco数据集上，使用voc模型，结果要转为coco的分类id",
+        "save_best_mAP_model": true,
+        
+        "save_coco": true,
+        "save_coco_when_gt": 0.999,
+        
+        "conf_threshold": 0.1,
+        "NMS_threshold": 0.5,
+        "max_len": 100
+    }
+}
